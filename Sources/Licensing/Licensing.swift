@@ -7,8 +7,6 @@
 import Foundation
 import Security
 
-let publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqY4iWzN7ICR69rJCWiw1l7FwUjUR76wzXIp1A0J63MZbZULfrftJoAqCGXzzVlg7lawLhUCSz/YjvDOsFDnN+19ef2yuQFwjvB7Wb/qDfqpEIv9bG0u5VUOYGQbpuBCr3PBNjme1MzLIA1UcXpRCoHaH+ddyKhHwWybCwbakad4EeUqPwYyXsIKt0xxxllcUnKeKtLU9ZAikLN7zNerwcW0jrO0PuKpVQ1ZtRH5Oxf3EVmi+XdxuZWdSwOteDX9+Pj0RvCFrSZdRq+S8H/fS7GzgouqBU0y0xWzq4p65UJDVT0i8pNHZXE2wz1mi9EVZoLj/ki/HPPL12JFOmNPHtQIDAQAB"
-
 func getPublicKey(_ base64PublicKeyString: String) throws -> SecKey
 {
     let data = Data(base64Encoded: base64PublicKeyString, options: [])!
@@ -72,5 +70,3 @@ public class License
         self.licenseKey = licenseKey
     }
 }
-
-var hasValidLicense : Bool = false
