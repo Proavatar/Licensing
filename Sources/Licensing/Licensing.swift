@@ -7,7 +7,7 @@
 import Foundation
 import Security
 
-func getPublicKey(_ base64PublicKeyString: String) throws -> SecKey
+public func getPublicKey(_ base64PublicKeyString: String) throws -> SecKey
 {
     let data = Data(base64Encoded: base64PublicKeyString, options: [])!
 
@@ -27,7 +27,7 @@ func getPublicKey(_ base64PublicKeyString: String) throws -> SecKey
     return publicKey
 }
 
-func validateLicense(license:License, publicKey: SecKey) -> Bool
+public func validateLicense(license:License, publicKey: SecKey) -> Bool
 {
     let message = license.userName.data(using: .utf8)! as CFData
     
@@ -61,8 +61,8 @@ func validateLicense(license:License, publicKey: SecKey) -> Bool
 
 public class License
 {
-    let userName:String
-    let licenseKey:String
+    public let userName:String
+    public let licenseKey:String
     
     public init(userName: String, licenseKey: String)
     {
