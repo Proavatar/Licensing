@@ -1,2 +1,3 @@
 # Licensing
-Package containing the licensing functionality for Proavatar's SDK licenses.
+
+A description of this package.
