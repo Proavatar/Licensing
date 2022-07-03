@@ -70,3 +70,6 @@ public class License
         self.licenseKey = licenseKey
     }
 }
+
+public var hasValidLicense : Bool = false
+
