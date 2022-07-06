@@ -119,6 +119,25 @@ public func generateNewAsymetricKeyPair() -> KeyPair?
     return nil
 }
 
+// ---------------------------------------------------------------------------------------------
+public func createLicenseFile( productName: String, licenseKey: String, bundleId: String )
+{
+    let licenseString = getLicenseInformation( productName: productName,
+                                               licenseKey:  licenseKey,
+                                               bundleId:    bundleId )
+
+    do
+    {
+        try licenseString.write( toFile: "./\(productName.firstLowerCased)_license.swift",
+                                 atomically: false,
+                                 encoding: .utf8 )
+    }
+    catch
+    {
+       print( "ERROR: failed to write license file!")
+    }
+}
+
 // =============================================================================================
 // Local functions
 // =============================================================================================
