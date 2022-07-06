@@ -128,7 +128,7 @@ public func createLicenseFile( productName: String, licenseKey: String, bundleId
 
     do
     {
-        try licenseString.write( toFile: "./\(productName.firstLowerCased)_license.swift",
+        try licenseString.write( toFile: "./\(productName)_license.swift",
                                  atomically: false,
                                  encoding: .utf8 )
     }
@@ -138,16 +138,15 @@ public func createLicenseFile( productName: String, licenseKey: String, bundleId
     }
 }
 
-// =============================================================================================
-// Local functions
-// =============================================================================================
-
 // ---------------------------------------------------------------------------------------------
 public func getLicenseInformation( productName: String, licenseKey: String, bundleId: String ) -> String
 {
     return "let \(productName.firstLowerCased)_license = ( bundleId:\"\(bundleId), licenseKey:\"\(licenseKey))\""
 }
 
+// =============================================================================================
+// Local functions
+// =============================================================================================
 
 // ---------------------------------------------------------------------------------------------
 func signData( privateSecKey: SecKey, data: CFData ) -> String?
