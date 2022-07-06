@@ -1,74 +1,116 @@
-//
+// ---------------------------------------------------------------------------------------------
 //  Licensing.swift
-//
-//  Created by Fred Dijkstra on 22/06/2022.
-//
+// ---------------------------------------------------------------------------------------------
 
 import Foundation
 import Security
 
-public func getPublicKey(_ base64PublicKeyString: String) throws -> SecKey
+// ---------------------------------------------------------------------------------------------
+public func generateLicenseKey( privateKey : String, bundleId : String) -> String?
 {
-    let data = Data(base64Encoded: base64PublicKeyString, options: [])!
-
-    let options: [String: Any] = [kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-                                  kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
-                                  kSecAttrKeySizeInBits as String: 2048]
-
-    var error: Unmanaged<CFError>?
-    guard let publicKey = SecKeyCreateWithData(
-        data as CFData,
-        options as CFDictionary,
-        &error
-    ) else {
-        throw error!.takeRetainedValue() as Error
+    guard let privateSecKey = getPrivateSecKey( privateKey )
+    else
+    {
+        return nil
     }
+    
+    let data = bundleId.data(using: .utf8)! as CFData
 
-    return publicKey
+    guard let licenseKey = signData( privateSecKey : privateSecKey, data: data )
+    else
+    {
+        return nil
+    }
+    return licenseKey
 }
 
-public func validateLicense(license:License, publicKey: SecKey) -> Bool
+// ---------------------------------------------------------------------------------------------
+public func signData( privateSecKey: SecKey, data: CFData ) -> String?
 {
-    let message = license.userName.data(using: .utf8)! as CFData
+    let algorithm : SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA512
+    var error: Unmanaged<CFError>?
     
-    guard let signatureData = Data(base64Encoded: license.licenseKey) as CFData? else
+    guard let signature = SecKeyCreateSignature( privateSecKey, algorithm, data, &error ) as Data?
+    else
     {
-        print("The signature isn't a base64 string!")
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+    return signature.base64EncodedString()
+}
+
+// ---------------------------------------------------------------------------------------------
+public func getPublicSecKey(_ publicKey: String ) -> SecKey?
+{
+    return getSecKey( base64KeyString: publicKey, keyClass: kSecAttrKeyClassPublic )
+}
+
+// ---------------------------------------------------------------------------------------------
+public func getPrivateSecKey(_ privateKey: String ) -> SecKey?
+{
+    return getSecKey( base64KeyString: privateKey, keyClass: kSecAttrKeyClassPrivate )
+}
+
+// ---------------------------------------------------------------------------------------------
+public func getSecKey( base64KeyString: String, keyClass: CFString ) -> SecKey?
+{
+    let keyData = Data(base64Encoded: base64KeyString, options: [])! as CFData
+
+    let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
+                       kSecAttrKeyClass      : keyClass,
+                       kSecAttrKeySizeInBits : 2048 ] as CFDictionary
+
+    var error: Unmanaged<CFError>?
+    
+    guard let key = SecKeyCreateWithData( keyData, attributes, &error )
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+
+    return key
+}
+
+// ---------------------------------------------------------------------------------------------
+public func validateLicenseKey( publicKey : String, licenseKey: String, bundleId: String ) -> Bool
+{
+    guard let appBundleId = Bundle.main.bundleIdentifier else
+    {
+        print( "WARNING: no bundle identifier specified." )
+        return false
+    }
+    
+    if !appBundleId.contains( bundleId )
+    {
+        print( "WARNING: wrong bundle identifier in license file." )
+        return false
+    }
+    
+    guard let key = getPublicSecKey( publicKey )
+    else
+    {
+        return false
+    }
+    
+    let algorithm : SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA512
+    let signedData = bundleId.data( using: .utf8 )! as CFData
+    
+    guard let signatureData = Data( base64Encoded: licenseKey ) as CFData? else
+    {
+        print("ERROR: The signature isn't a base64 string!")
         return false
     }
 
-    let algorithm : SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA512
-    
     var error: Unmanaged<CFError>?
-    if SecKeyVerifySignature(
-        publicKey,
-        algorithm,
-        message,
-        signatureData,
-        &error)
+    
+    if SecKeyVerifySignature( key, algorithm, signedData, signatureData, &error )
     {
         return true
     }
-    else
-    {
-        if let error = error
-        {
-            print(error.takeRetainedValue())
-        }
-        return false
-    }
-}
-
-public class License
-{
-    public let userName:String
-    public let licenseKey:String
     
-    public init(userName: String, licenseKey: String)
-    {
-        self.userName = userName
-        self.licenseKey = licenseKey
-    }
+    print( error!.takeRetainedValue() )
+    return false
 }
 
 public var hasValidLicense : Bool = false
