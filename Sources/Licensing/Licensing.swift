@@ -120,15 +120,15 @@ public func generateNewAsymetricKeyPair() -> KeyPair?
 }
 
 // ---------------------------------------------------------------------------------------------
-public func createLicenseFile( productName: String, licenseKey: String, bundleId: String )
+public func createLicenseFile( sdkName: String, licenseKey: String, bundleId: String )
 {
-    let licenseString = getLicenseInformation( productName: productName,
+    let licenseString = getLicenseInformation( sdkName:     sdkName,
                                                licenseKey:  licenseKey,
                                                bundleId:    bundleId )
 
     do
     {
-        try licenseString.write( toFile: "./\(productName)_license.swift",
+        try licenseString.write( toFile: "./\(sdkName)_license.swift",
                                  atomically: false,
                                  encoding: .utf8 )
     }
@@ -139,9 +139,9 @@ public func createLicenseFile( productName: String, licenseKey: String, bundleId
 }
 
 // ---------------------------------------------------------------------------------------------
-public func getLicenseInformation( productName: String, licenseKey: String, bundleId: String ) -> String
+public func getLicenseInformation( sdkName: String, licenseKey: String, bundleId: String ) -> String
 {
-    return "let \(productName.firstLowerCased)_license = ( bundleId:\"\(bundleId), licenseKey:\"\(licenseKey))\""
+    return "let \(sdkName.firstLowerCased)_license = ( bundleId:\"\(bundleId), licenseKey:\"\(licenseKey))\""
 }
 
 // =============================================================================================
