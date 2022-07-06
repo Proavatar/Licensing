@@ -5,6 +5,17 @@
 import Foundation
 import Security
 
+
+// ---------------------------------------------------------------------------------------------
+extension StringProtocol
+{
+    var firstLowerCased: String { prefix(1).lowercased() + dropFirst() }
+}
+
+// =============================================================================================
+// Public functions
+// =============================================================================================
+
 // ---------------------------------------------------------------------------------------------
 public struct KeyPair
 {
@@ -29,54 +40,6 @@ public func generateLicenseKey( privateKey : String, bundleId : String) -> Strin
         return nil
     }
     return licenseKey
-}
-
-// ---------------------------------------------------------------------------------------------
-public func signData( privateSecKey: SecKey, data: CFData ) -> String?
-{
-    let algorithm : SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA512
-    var error: Unmanaged<CFError>?
-    
-    guard let signature = SecKeyCreateSignature( privateSecKey, algorithm, data, &error ) as Data?
-    else
-    {
-        print( error!.takeRetainedValue() )
-        return nil
-    }
-    return signature.base64EncodedString()
-}
-
-// ---------------------------------------------------------------------------------------------
-public func getPublicSecKey(_ publicKey: String ) -> SecKey?
-{
-    return getSecKey( base64KeyString: publicKey, keyClass: kSecAttrKeyClassPublic )
-}
-
-// ---------------------------------------------------------------------------------------------
-public func getPrivateSecKey(_ privateKey: String ) -> SecKey?
-{
-    return getSecKey( base64KeyString: privateKey, keyClass: kSecAttrKeyClassPrivate )
-}
-
-// ---------------------------------------------------------------------------------------------
-public func getSecKey( base64KeyString: String, keyClass: CFString ) -> SecKey?
-{
-    let keyData = Data( base64Encoded: base64KeyString )! as CFData
-
-    let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
-                       kSecAttrKeyClass      : keyClass,
-                       kSecAttrKeySizeInBits : 2048 ] as CFDictionary
-
-    var error: Unmanaged<CFError>?
-    
-    guard let key = SecKeyCreateWithData( keyData, attributes, &error )
-    else
-    {
-        print( error!.takeRetainedValue() )
-        return nil
-    }
-
-    return key
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -121,22 +84,7 @@ public func validateLicenseKey( publicKey : String, licenseKey: String, bundleId
 }
 
 // ---------------------------------------------------------------------------------------------
-func encodeSecKey(_ secKey: SecKey ) -> String?
-{
-    var error: Unmanaged<CFError>?
-
-    guard let keyData = SecKeyCopyExternalRepresentation( secKey, &error )
-    else
-    {
-        print( error!.takeRetainedValue() )
-        return nil
-    }
-        
-    return (keyData as NSData).base64EncodedString()
-}
-
-// ---------------------------------------------------------------------------------------------
-func generateNewAsymetricKeyPair() -> KeyPair?
+public func generateNewAsymetricKeyPair() -> KeyPair?
 {
     let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
                        kSecAttrKeySizeInBits : 2048 ] as CFDictionary
@@ -165,8 +113,76 @@ func generateNewAsymetricKeyPair() -> KeyPair?
     return nil
 }
 
+// =============================================================================================
+// Local functions
+// =============================================================================================
+
 // ---------------------------------------------------------------------------------------------
-public var hasValidLicense : Bool = false
-// ---------------------------------------------------------------------------------------------
+public func getLicenseInformation( productName: String, licenseKey: String, bundleId: String ) -> String
+{
+    return "let \(productName.firstLowerCased)_license = ( bundleId:\"\(bundleId), licenseKey:\"\(licenseKey))\""
+}
 
 
+// ---------------------------------------------------------------------------------------------
+func signData( privateSecKey: SecKey, data: CFData ) -> String?
+{
+    let algorithm : SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA512
+    var error: Unmanaged<CFError>?
+    
+    guard let signature = SecKeyCreateSignature( privateSecKey, algorithm, data, &error ) as Data?
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+    return signature.base64EncodedString()
+}
+
+// ---------------------------------------------------------------------------------------------
+func getPublicSecKey(_ publicKey: String ) -> SecKey?
+{
+    return getSecKey( base64KeyString: publicKey, keyClass: kSecAttrKeyClassPublic )
+}
+
+// ---------------------------------------------------------------------------------------------
+func getPrivateSecKey(_ privateKey: String ) -> SecKey?
+{
+    return getSecKey( base64KeyString: privateKey, keyClass: kSecAttrKeyClassPrivate )
+}
+
+// ---------------------------------------------------------------------------------------------
+func getSecKey( base64KeyString: String, keyClass: CFString ) -> SecKey?
+{
+    let keyData = Data( base64Encoded: base64KeyString )! as CFData
+
+    let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
+                       kSecAttrKeyClass      : keyClass,
+                       kSecAttrKeySizeInBits : 2048 ] as CFDictionary
+
+    var error: Unmanaged<CFError>?
+    
+    guard let key = SecKeyCreateWithData( keyData, attributes, &error )
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+
+    return key
+}
+
+// ---------------------------------------------------------------------------------------------
+func encodeSecKey(_ secKey: SecKey ) -> String?
+{
+    var error: Unmanaged<CFError>?
+
+    guard let keyData = SecKeyCopyExternalRepresentation( secKey, &error )
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+        
+    return (keyData as NSData).base64EncodedString()
+}
