@@ -12,5 +12,5 @@ The package implements the following main functionality:
 * Create and write a license file.
 * Validate a license key by supplying the public key and the bundle identifier.
 
-For a complete reference and detailed design description, download the document "[Licensing SDK](https://docs.google.com/document/d/1lQ_W0G891qJgnb63-4g72k95IIa5zuBn3TznHAQkiiI/export?format=pdf)"
+For a complete reference and detailed design description, download the document "[Licensing SDKs](https://docs.google.com/document/d/1lQ_W0G891qJgnb63-4g72k95IIa5zuBn3TznHAQkiiI/export?format=pdf)"
 
