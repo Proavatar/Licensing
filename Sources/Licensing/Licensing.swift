@@ -6,6 +6,13 @@ import Foundation
 import Security
 
 // ---------------------------------------------------------------------------------------------
+public struct KeyPair
+{
+    public var privateKey : String
+    public var publicKey  : String
+}
+
+// ---------------------------------------------------------------------------------------------
 public func generateLicenseKey( privateKey : String, bundleId : String) -> String?
 {
     guard let privateSecKey = getPrivateSecKey( privateKey )
@@ -54,7 +61,7 @@ public func getPrivateSecKey(_ privateKey: String ) -> SecKey?
 // ---------------------------------------------------------------------------------------------
 public func getSecKey( base64KeyString: String, keyClass: CFString ) -> SecKey?
 {
-    let keyData = Data(base64Encoded: base64KeyString, options: [])! as CFData
+    let keyData = Data( base64Encoded: base64KeyString )! as CFData
 
     let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
                        kSecAttrKeyClass      : keyClass,
@@ -113,5 +120,53 @@ public func validateLicenseKey( publicKey : String, licenseKey: String, bundleId
     return false
 }
 
+// ---------------------------------------------------------------------------------------------
+func encodeSecKey(_ secKey: SecKey ) -> String?
+{
+    var error: Unmanaged<CFError>?
+
+    guard let keyData = SecKeyCopyExternalRepresentation( secKey, &error )
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+        
+    return (keyData as NSData).base64EncodedString()
+}
+
+// ---------------------------------------------------------------------------------------------
+func generateNewAsymetricKeyPair() -> KeyPair?
+{
+    let attributes = [ kSecAttrKeyType       : kSecAttrKeyTypeRSA,
+                       kSecAttrKeySizeInBits : 2048 ] as CFDictionary
+
+    var error: Unmanaged<CFError>?
+    
+    guard let privateSecKey = SecKeyCreateRandomKey( attributes, &error )
+    else
+    {
+        print( error!.takeRetainedValue() )
+        return nil
+    }
+    
+    guard let publicSecKey = SecKeyCopyPublicKey( privateSecKey )
+    else
+    {
+        return nil
+    }
+    
+    if let privateKey = encodeSecKey( privateSecKey ),
+       let publicKey  = encodeSecKey( publicSecKey  )
+    {
+        return KeyPair( privateKey: privateKey, publicKey: publicKey )
+    }
+    
+    return nil
+}
+
+// ---------------------------------------------------------------------------------------------
 public var hasValidLicense : Bool = false
+// ---------------------------------------------------------------------------------------------
+
 
