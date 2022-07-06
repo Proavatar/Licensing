@@ -17,10 +17,16 @@ extension StringProtocol
 // =============================================================================================
 
 // ---------------------------------------------------------------------------------------------
-public struct KeyPair
+public class KeyPair
 {
     public var privateKey : String
     public var publicKey  : String
+    
+    public init( privateKey: String, publicKey: String )
+    {
+        self.publicKey  = publicKey
+        self.privateKey = privateKey
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
