@@ -1,4 +1,4 @@
-# Licensing
+# Licensing SDKs
 
 When creating an SDK that is to be offered commercially, a method that is often used is to place the SDK with limited functionality on a public repository for anybody to download and add it to their application project. The full functionality is then only available for those who have purchased a license.
 
