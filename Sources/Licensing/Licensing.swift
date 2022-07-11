@@ -51,17 +51,17 @@ public func generateLicenseKey( privateKey : String, bundleId : String) -> Strin
 // ---------------------------------------------------------------------------------------------
 public func validateLicenseKey( publicKey : String, licenseKey: String, bundleId: String ) -> Bool
 {
-//    guard let appBundleId = Bundle.main.bundleIdentifier else
-//    {
-//        print( "WARNING: no bundle identifier specified." )
-//        return false
-//    }
-//
-//    if !appBundleId.contains( bundleId )
-//    {
-//        print( "WARNING: bundle ID \(bundleId) in license file not in bundle ID \(appBundleId) from app." )
-//        return false
-//    }
+    guard let appBundleId = Bundle.main.bundleIdentifier else
+    {
+        print( "WARNING: no bundle identifier specified." )
+        return false
+    }
+
+    if !appBundleId.contains( bundleId )
+    {
+        print( "WARNING: bundle ID \(bundleId) in license file not in bundle ID \(appBundleId) from app." )
+        return false
+    }
     
     guard let key = getPublicSecKey( publicKey )
     else
