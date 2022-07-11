@@ -56,7 +56,7 @@ public func validateLicenseKey( publicKey : String, licenseKey: String, bundleId
 //        print( "WARNING: no bundle identifier specified." )
 //        return false
 //    }
-//    
+//
 //    if !appBundleId.contains( bundleId )
 //    {
 //        print( "WARNING: bundle ID \(bundleId) in license file not in bundle ID \(appBundleId) from app." )
@@ -142,7 +142,7 @@ public func createLicenseFile( sdkName: String, licenseKey: String, bundleId: St
 // ---------------------------------------------------------------------------------------------
 public func getLicenseInformation( sdkName: String, licenseKey: String, bundleId: String ) -> String
 {
-    return "let \(sdkName.firstLowerCased)_license = (bundleId:\"\(bundleId)\", licenseKey:\"\(licenseKey))\")"
+    return "let \(sdkName.firstLowerCased)_license = (bundleId:\"\(bundleId)\", licenseKey:\"\(licenseKey)\")"
 }
 
 // =============================================================================================
