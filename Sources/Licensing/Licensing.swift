@@ -141,7 +141,7 @@ public func createLicenseFile( sdkName: String, licenseKey: String, bundleId: St
 // ---------------------------------------------------------------------------------------------
 public func getLicenseInformation( sdkName: String, licenseKey: String, bundleId: String ) -> String
 {
-    return "let \(sdkName.firstLowerCased)_license = ( bundleId:\"\(bundleId)\", licenseKey:\"\(licenseKey)))\""
+    return "let \(sdkName.firstLowerCased)_license = ( bundleId:\"\(bundleId)\", licenseKey:\"\(licenseKey))\")"
 }
 
 // =============================================================================================
